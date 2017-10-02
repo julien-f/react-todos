@@ -10,6 +10,44 @@ class App extends Component {
     todos: new Map()
   }
 
+  componentWillMount () {
+    fetch('/todos').then(res =>
+      res.json().then(todos => {
+        this.setState({
+          todos: new Map().withMutations(map => {
+            todos.forEach(todo => {
+              map.set(todo.id, todo)
+            })
+          })
+        })
+      })
+    )
+  }
+
+  _onCreateTodo = todo => {
+    const { id } = todo
+    const { todos } = this.state
+    const previous = todos.get(id)
+
+    this.setState({ todos: todos.set(id, todo) })
+
+    fetch(`/todos/${id}`, {
+      body: JSON.stringify(todo),
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'PUT'
+    }).catch(() => {
+      this.setState({
+        todos: previous === undefined
+          ? todos.delete(id)
+          : todos.set(id, previous)
+      })
+    })
+  }
+
+  _onEditTodo = this._onCreateTodo
+
   _onTodosChange = todos => {
     this.setState({ todos })
   }
@@ -25,11 +63,13 @@ class App extends Component {
 
         {/* those two lists will share the same data */}
         <TodoList
-          onChange={this._onTodosChange}
+          onCreateTodo={this._onCreateTodo}
+          onEditTodo={this._onEditTodo}
           todos={state.todos}
         />
         <TodoList
-          onChange={this._onTodosChange}
+          onCreateTodo={this._onCreateTodo}
+          onEditTodo={this._onEditTodo}
           todos={state.todos}
         />
       </div>

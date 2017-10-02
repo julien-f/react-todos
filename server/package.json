@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "immutable": "^4.0.0-rc.3",
+    "koa": "^2.3.0",
+    "koa-body": "^2.5.0",
+    "koa-static": "^4.0.1",
+    "reselect": "^3.0.1"
+  }
+}

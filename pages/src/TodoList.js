@@ -5,7 +5,8 @@ import { createSelector } from 'reselect'
 
 export default class TodoList extends Component {
   static propTypes = {
-    onChange: PropTypes.func.isRequired,
+    onCreateTodo: PropTypes.func.isRequired,
+    onEditTodo: PropTypes.func.isRequired,
     todos:ImmutablePropTypes.mapOf(
       PropTypes.shape({
         completed: PropTypes.bool.isRequired,
@@ -33,13 +34,13 @@ export default class TodoList extends Component {
 
     // all items of collection should have a unique identifier
     const id = Math.random().toString(36).slice(2)
-
-    const { props } = this
-    props.onChange(props.todos.set(id, {
+    const todo = {
       completed: false,
       id,
       label: newTodoLabel
-    }))
+    }
+
+    this.props.onCreateTodo(todo)
   }
 
   // - what's a selector?
@@ -73,11 +74,10 @@ export default class TodoList extends Component {
   _onTodoCompletionChange = ({ target }) => {
     const { id } = target.dataset
     const { props } = this
-    const { todos } = props
-    props.onChange(todos.set(id, {
-      ...todos.get(id),
+    props.onEditTodo({
+      ...props.todos.get(id),
       completed: target.checked
-    }))
+    })
   }
 
   render() {
