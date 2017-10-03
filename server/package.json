@@ -5,5 +5,8 @@
     "koa-body": "^2.5.0",
     "koa-static": "^4.0.1",
     "reselect": "^3.0.1"
+  },
+  "scripts": {
+    "start": "node index.js"
   }
 }

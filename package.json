@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "build": "(cd pages; yarn; yarn run build); (cd server; yarn)",
+    "start": "(cd server; yarn run start)"
+  }
+}
