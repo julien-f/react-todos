@@ -11,7 +11,7 @@ class App extends Component {
   }
 
   componentWillMount () {
-    fetch('/todos').then(res =>
+    fetch('//localhost:20431/todos').then(res =>
       res.json().then(todos => {
         this.setState({
           todos: new Map().withMutations(map => {
@@ -31,7 +31,7 @@ class App extends Component {
 
     this.setState({ todos: todos.set(id, todo) })
 
-    fetch(`/todos/${id}`, {
+    fetch(`//localhost:20431/todos/${id}`, {
       body: JSON.stringify(todo),
       headers: {
         'content-type': 'application/json'

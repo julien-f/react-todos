@@ -1,5 +1,7 @@
 const app = new (require('koa'))()
 
+app.use(require('@koa/cors')())
+
 app.use(require('koa-body')())
 
 let todos = new (require('immutable')).Map()
