@@ -1,4 +1,7 @@
 {
+  "name": "server",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "immutable": "^4.0.0-rc.3",
     "koa": "^2.3.0",

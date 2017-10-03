@@ -1,6 +1,11 @@
 {
+  "private": true,
   "scripts": {
-    "build": "(cd pages; yarn; yarn run build); (cd server; yarn)",
-    "start": "(cd server; yarn run start)"
-  }
+    "build": "cd pages && yarn run build",
+    "start": "cd server && yarn run start"
+  },
+  "workspaces": [
+    "pages",
+    "server"
+  ]
 }
