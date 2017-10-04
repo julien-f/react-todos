@@ -40,6 +40,7 @@ class App extends Component {
       method: 'POST'
     }).catch(() => {
     })
+    this.componentWillMount ()
     }
 
   _onCreateTodo = todo => {
@@ -62,6 +63,7 @@ class App extends Component {
           : todos.set(id, previous)
       })
     })
+    this.componentWillMount ()
   }
 
   _onEditTodo = this._onCreateTodo
