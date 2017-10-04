@@ -26,6 +26,10 @@ app.use(async (ctx, next) => {
     todos = todos.set(id, todo)
     ctx.body = 'ok'
   }
+  else if(method === 'POST') {
+    todos = todos.delete(id)
+    ctx.body = 'ok'
+  }
 })
 
 app.use(require('koa-static')(`${__dirname}/../pages/build`))

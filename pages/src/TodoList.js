@@ -22,6 +22,12 @@ export default class TodoList extends Component {
     newTodoLabel: ''
   }
 
+  _removeTodo = ({ target }) =>{
+    const { id } = target.dataset
+    //this.props.todos.remove(id)
+    this.props.onRemove(id)
+  }
+
   _createTodo = event => {
     event.preventDefault()
 
@@ -114,6 +120,7 @@ export default class TodoList extends Component {
                   ? <del>{label}</del>
                   : label
                 }
+                <input type='button' value='X' onClick={this._removeTodo} data-id={id}/>
               </label>
             </li>
           )}

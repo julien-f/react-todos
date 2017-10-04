@@ -24,6 +24,24 @@ class App extends Component {
     )
   }
 
+  _onTodoRemove = id => {
+    //this.state = todos.filter((todo) => {})
+    // filter out the todo that has to be removed
+    let list = new Map()
+    list= this.state.todos.delete(id)
+    // update state
+    this.setState({
+      todos: list
+    })
+    fetch(`/todos/${id}`, {
+      headers: {
+        'content-type': 'text/plain'
+      },
+      method: 'POST'
+    }).catch(() => {
+    })
+    }
+
   _onCreateTodo = todo => {
     const { id } = todo
     const { todos } = this.state
@@ -66,11 +84,13 @@ class App extends Component {
           onCreateTodo={this._onCreateTodo}
           onEditTodo={this._onEditTodo}
           todos={state.todos}
+          onRemove={this._onTodoRemove}
         />
         <TodoList
           onCreateTodo={this._onCreateTodo}
           onEditTodo={this._onEditTodo}
           todos={state.todos}
+          onRemove={this._onTodoRemove}
         />
       </div>
     )
