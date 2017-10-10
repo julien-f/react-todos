@@ -43,6 +43,16 @@ export default class TodoList extends Component {
     this.props.onCreateTodo(todo)
   }
 
+  _onDeleteElmntTodo = (event, id)=> {
+
+    event.preventDefault();
+    if(id === undefined){
+      return;
+    }
+    this.props.onDeleteElementToDo(id);
+
+   }
+
   // - what's a selector?
   // - what's a memoized selector?
   //
@@ -114,6 +124,8 @@ export default class TodoList extends Component {
                   ? <del>{label}</del>
                   : label
                 }
+                {' '}
+                <button type='button' onClick={(evt) => this._onDeleteElmntTodo(evt, id)}>{' '}X{' '}</button>
               </label>
             </li>
           )}
