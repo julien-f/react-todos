@@ -1,4 +1,3 @@
-//import io from 'socket.io';
 import React, { Component } from 'react'
 import { Map } from 'immutable'
 import logo from './logo.svg'
@@ -12,53 +11,34 @@ class App extends Component {
 
   componentWillMount () {
 
-    // Create WebSocket connection.
     let socket = new WebSocket('ws://localhost:3000');
     this.socket = socket
 
-    // Receiving a message from the server
     socket.onmessage = msg => {
       let todos = JSON.parse(msg.data);
-      let {id} = todos
-      console.log(todos);
       this.setState({ todos: Map(todos)})
-      /*
-      if(Object.keys(todos).length>0){
-      this.setState({ todos: new Map().withMutations(map => {
-            todos.forEach(todo => {
-              map.set(todo.id, todo)
-            })
-          })
-        })}*/
-      console.log("todos");
     }
 
-    // Connection opened
-    socket.onopen = () => {
-      let msg = {data : "send me data"}
-      this.socket.send(JSON.stringify(msg));
-    }
   }
 
+  componentWillUnmount(){
+    this.socket.close()
+  }
 
   _onTodoRemove = id => {
-    //this.state = todos.filter((todo) => {})
-    // filter out the todo that has to be removed
-    let list = new Map()
-    list= this.state.todos.delete(id)
-    // update state
     this.setState({
-      todos: list
+      todos: this.state.todos.delete(id)
     })
-    let msg = {data : "Delete data", id:id}
-    this.socket.send(JSON.stringify(msg));
+    let data = {action : "delete", id:id}
+    this.socket.send(JSON.stringify(data));
     }
 
   _onCreateTodo = todo => {
     const { id } = todo
     let { todos } = this.state
     this.setState({ todos: todos.set(id, todo)})
-    this.socket.send(JSON.stringify(todo));
+    let data = {action : "set", todo:todo}
+    this.socket.send(JSON.stringify(data));
   }
 
   _onEditTodo = this._onCreateTodo
