@@ -34,7 +34,7 @@ app.use(require('koa-static')(`${__dirname}/../pages/build`))
 
 app.listen(20431, function(error) {
   if (error != null) {
-    console.error(error)
+    return console.error(error)
   }
 
   const { address, port } = this.address()
