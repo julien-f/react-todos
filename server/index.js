@@ -1,40 +1,51 @@
-const app = new (require('koa'))()
+const Koa = require('koa'),
+  websockify = require('koa-websocket');
+
+const app = websockify(new Koa());
+let todos = new (require('immutable')).Map()
 
 app.use(require('koa-body')())
 
-let todos = new (require('immutable')).Map()
-const RE = new RegExp('/todos(?:/(.+))?')
-app.use(async (ctx, next) => {
-  const matches = RE.exec(ctx.url)
-  if (matches === null) {
-    return next()
-  }
+app.ws.use((ctx, next) =>{
 
-  const id = matches[1]
-  const { method } = ctx
-  if (method === 'GET') {
-    if (id === undefined) {
-      ctx.body = todos.toArray()
-    } else {
-      ctx.body = todos.get(id)
-    }
-  } else if (method === 'PUT' && id !== undefined) {
-    const todo = {
-      ...ctx.request.body,
-      id
-    }
-    todos = todos.set(id, todo)
-    ctx.body = 'ok'
-  }
-  else if(method === 'POST') {
-    todos = todos.delete(id)
-    ctx.body = 'ok'
-  }
-})
+    ctx.websocket.on('message', function (data) {
 
-app.use(require('koa-static')(`${__dirname}/../pages/build`))
+      todo = JSON.parse(data);
+      console.log(todo.data);
+      if(todo.data === "send me data"){
+        console.log(todo.data);
+        ctx.websocket.send(JSON.stringify(todos));
+      } else if(todo.data === "Delete data"){
+        console.log(todo.id)
+        todos = todos.delete(todo.id)
+        ctx.websocket.send(JSON.stringify(todos));
+      } else{
+        let { id } = todo
+        console.log(id);
+        console.log(todo);
+        todos = todos.set(id, todo)
+        console.log(todos);
+        ctx.websocket.send(JSON.stringify(todos));
+      }
+  });
+});
 
-app.listen(20431, function (error) {
+    //ctx.websocket.on('open', function(event) {
+      //ctx.websocket.send(JSON.stringify(todos));
+  // });
+
+app.use(require('koa-static')(`${__dirname}/../pages/build`));
+
+/*
+io.sockets.on('connection', function(socket){
+
+  console.log('a user connected');
+  socket.send("Welcome !");
+  socket.on('message',function(data){console.log('received'); });
+});
+*/
+
+app.listen(3000, function (error) {
   if (error != null) {
     console.error(error)
   }

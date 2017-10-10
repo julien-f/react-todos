@@ -1,6 +1,6 @@
+//import io from 'socket.io';
 import React, { Component } from 'react'
 import { Map } from 'immutable'
-
 import logo from './logo.svg'
 import TodoList from './TodoList.js'
 import './App.css'
@@ -11,18 +11,35 @@ class App extends Component {
   }
 
   componentWillMount () {
-    fetch('/todos').then(res =>
-      res.json().then(todos => {
-        this.setState({
-          todos: new Map().withMutations(map => {
+
+    // Create WebSocket connection.
+    let socket = new WebSocket('ws://localhost:3000');
+    this.socket = socket
+
+    // Receiving a message from the server
+    socket.onmessage = msg => {
+      let todos = JSON.parse(msg.data);
+      let {id} = todos
+      console.log(todos);
+      this.setState({ todos: Map(todos)})
+      /*
+      if(Object.keys(todos).length>0){
+      this.setState({ todos: new Map().withMutations(map => {
             todos.forEach(todo => {
               map.set(todo.id, todo)
             })
           })
-        })
-      })
-    )
+        })}*/
+      console.log("todos");
+    }
+
+    // Connection opened
+    socket.onopen = () => {
+      let msg = {data : "send me data"}
+      this.socket.send(JSON.stringify(msg));
+    }
   }
+
 
   _onTodoRemove = id => {
     //this.state = todos.filter((todo) => {})
@@ -33,37 +50,15 @@ class App extends Component {
     this.setState({
       todos: list
     })
-    fetch(`/todos/${id}`, {
-      headers: {
-        'content-type': 'text/plain'
-      },
-      method: 'POST'
-    }).catch(() => {
-    })
-    this.componentWillMount ()
+    let msg = {data : "Delete data", id:id}
+    this.socket.send(JSON.stringify(msg));
     }
 
   _onCreateTodo = todo => {
     const { id } = todo
-    const { todos } = this.state
-    const previous = todos.get(id)
-
-    this.setState({ todos: todos.set(id, todo) })
-
-    fetch(`/todos/${id}`, {
-      body: JSON.stringify(todo),
-      headers: {
-        'content-type': 'application/json'
-      },
-      method: 'PUT'
-    }).catch(() => {
-      this.setState({
-        todos: previous === undefined
-          ? todos.delete(id)
-          : todos.set(id, previous)
-      })
-    })
-    this.componentWillMount ()
+    let { todos } = this.state
+    this.setState({ todos: todos.set(id, todo)})
+    this.socket.send(JSON.stringify(todo));
   }
 
   _onEditTodo = this._onCreateTodo
