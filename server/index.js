@@ -27,6 +27,11 @@ app.use(async (ctx, next) => {
     }
     todos = todos.set(id, todo)
     ctx.body = 'ok'
+  } else if(method === 'DELETE' && id !== undefined){
+
+     todos = todos.delete(id);
+     ctx.response.body = JSON.stringify(todos);
+
   }
 })
 

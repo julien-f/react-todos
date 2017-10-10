@@ -48,6 +48,32 @@ class App extends Component {
 
   _onEditTodo = this._onCreateTodo
 
+  _onDeleteElementToDo = id => {
+
+  fetch(`/todos/${id}`, {
+
+    body: JSON.stringify(id),
+    headers: {
+      'content-type': 'application/json'
+    },
+    method: 'DELETE'
+   }).then(response => response.json()
+         .then( responseJSON => {
+              this.setState({ todos:  new Map().withMutations(map => {
+                  Object.keys(responseJSON).forEach(id => {
+                  map.set(id, responseJSON[id])
+            })
+          })
+        });
+
+       }
+
+    )
+
+  );
+
+}
+
   _onTodosChange = todos => {
     this.setState({ todos })
   }
@@ -65,11 +91,13 @@ class App extends Component {
         <TodoList
           onCreateTodo={this._onCreateTodo}
           onEditTodo={this._onEditTodo}
+          onDeleteElementToDo={this._onDeleteElementToDo}
           todos={state.todos}
         />
         <TodoList
           onCreateTodo={this._onCreateTodo}
           onEditTodo={this._onEditTodo}
+          onDeleteElementToDo={this._onDeleteElementToDo}
           todos={state.todos}
         />
       </div>
