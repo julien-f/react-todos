@@ -10,7 +10,7 @@ class App extends Component {
     todos: new Map()
   }
 
-  componentWillMount () {
+  componentWillMount() {
     fetch('//localhost:20431/todos').then(res =>
       res.json().then(todos => {
         this.setState({
@@ -39,9 +39,8 @@ class App extends Component {
       method: 'PUT'
     }).catch(() => {
       this.setState({
-        todos: previous === undefined
-          ? todos.delete(id)
-          : todos.set(id, previous)
+        todos:
+          previous === undefined ? todos.delete(id) : todos.set(id, previous)
       })
     })
   }

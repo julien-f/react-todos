@@ -32,7 +32,7 @@ app.use(async (ctx, next) => {
 
 app.use(require('koa-static')(`${__dirname}/../pages/build`))
 
-app.listen(20431, function (error) {
+app.listen(20431, function(error) {
   if (error != null) {
     console.error(error)
   }

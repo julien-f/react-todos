@@ -7,7 +7,7 @@ export default class TodoList extends Component {
   static propTypes = {
     onCreateTodo: PropTypes.func.isRequired,
     onEditTodo: PropTypes.func.isRequired,
-    todos:ImmutablePropTypes.mapOf(
+    todos: ImmutablePropTypes.mapOf(
       PropTypes.shape({
         completed: PropTypes.bool.isRequired,
         label: PropTypes.string.isRequired,
@@ -33,7 +33,9 @@ export default class TodoList extends Component {
     this.setState({ newTodoLabel: '' })
 
     // all items of collection should have a unique identifier
-    const id = Math.random().toString(36).slice(2)
+    const id = Math.random()
+      .toString(36)
+      .slice(2)
     const todo = {
       completed: false,
       id,
@@ -55,11 +57,9 @@ export default class TodoList extends Component {
         return todos.valueSeq()
       }
 
-      return todos.valueSeq().filter(
-        display === 'active'
-          ? t => !t.completed
-          : t => t.completed
-      )
+      return todos
+        .valueSeq()
+        .filter(display === 'active' ? t => !t.completed : t => t.completed)
     }
   )
 
@@ -88,35 +88,34 @@ export default class TodoList extends Component {
           <p>
             <input
               onChange={this._onNewTodoLabelChange}
-              placeholder='Type and press <Enter> to create an item'
-              size='40'
+              placeholder="Type and press <Enter> to create an item"
+              size="40"
               value={state.newTodoLabel}
             />
           </p>
         </form>
         <select onChange={this._onDisplayChange} value={state.display}>
-          <option value='all'>All</option>
-          <option value='active'>Active</option>
-          <option value='completed'>Completed</option>
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
         </select>
         <ul>
-          {this._getVisibleTodos(state, this.props).map(({ completed, id, label }) =>
+          {this._getVisibleTodos(
+            state,
+            this.props
+          ).map(({ completed, id, label }) => (
             <li key={id}>
               <label>
                 <input
                   checked={completed}
                   data-id={id}
                   onChange={this._onTodoCompletionChange}
-                  type='checkbox'
-                />
-                {' '}
-                {completed
-                  ? <del>{label}</del>
-                  : label
-                }
+                  type="checkbox"
+                />{' '}
+                {completed ? <del>{label}</del> : label}
               </label>
             </li>
-          )}
+          ))}
         </ul>
       </div>
     )
