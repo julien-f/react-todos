@@ -1,8 +1,8 @@
-import { default as React } from 'react'
+import React from 'react'
 import { Map } from 'immutable'
-import { provideState, update, mergeIntoState, injectState } from "freactal";
+import { provideState } from "freactal";
 import logo from './logo.svg'
-import TodoList from './TodoList.js'
+import TodoList from './TodoList'
 import './App.css'
 
 const withState = provideState({
@@ -10,7 +10,7 @@ const withState = provideState({
     todos: new Map()
   }),
   effects: {
-    createTodo: (_, todo) => (state) => ({ ...state, todos: state.todos.set(todo.id, todo) })
+    updateTodo: (_, todo) => (state) => ({ ...state, todos: state.todos.set(todo.id, todo) })
   }
 })
 
@@ -28,4 +28,4 @@ export const App = ({ state, effects }) => {
   )
 }
 
-export default withState(injectState(App))
+export default withState(App)

@@ -1,18 +1,18 @@
-import ImmutablePropTypes from 'react-immutable-proptypes'
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import { createSelector } from 'reselect'
-import { injectState, provideState, update, mergeIntoState } from "freactal";
+import { injectState, provideState, mergeIntoState } from "freactal";
 import { Map } from 'immutable'
 
-const persistEventInputValue = fn => (event, ...args) => fn(event.target.value, ...args)
-const persistEvent = fn => (event, ...args) => {
+const extractEventValue = fn => (event, ...args) => fn(event.target.value, ...args)
+const extractEventTarget = fn => (event, ...args) => fn(event.target, ...args)
+const eventPreventDefault = fn => (event, ...args) => {
   event.preventDefault()
   return fn(event, ...args)
 }
 
 const withState = provideState({
   initialState: () => ({
+    display: 'all',
     newTodoLabel: ''
   }),
   effects: {
@@ -33,14 +33,18 @@ const withState = provideState({
       },
       method: 'PUT'
     }),
-    onCreateTodo: (effects, event) => state => {
+    onCreateTodo: (effects) => state => {
+
+      if (state.newTodoLabel === '') { return }
+
       const id = Math.random().toString(36).slice(2)
       const todo = {
+        completed: false,
         id,
         label: state.newTodoLabel
       }
       effects.sendToServer(todo)
-      effects.createTodo(todo)
+      effects.updateTodo(todo)
       effects.freeInput()
     },
     freeInput: () => state => ({
@@ -51,28 +55,75 @@ const withState = provideState({
       ({
         ...state,
         newTodoLabel: value
+      }),
+    onDisplayChange: (_, value) => state =>
+      ({
+        ...state,
+        display: value
+      }),
+    onTodoCompletionChange: (effects, target) => state => {
+      const { id } = target.dataset
+      effects.updateTodo({
+        ...state.todos.get(id),
+        completed: target.checked
       })
+      effects.sendToServer({
+        ...state.todos.get(id),
+        completed: target.checked
+      })
+    }
   }
 })
+
+const getVisibleTodos = createSelector(
+  state => state.display,
+  state => state.todos,
+  (display, todos) => {
+    if (display === 'all') {
+      return todos.valueSeq()
+    }
+
+    return todos.valueSeq().filter(
+      display === 'active'
+        ? t => !t.completed
+        : t => t.completed
+    )
+  }
+)
 
 export const TodoList = ({ state, effects }) => (
 
   <div>
-    <form onSubmit={persistEvent(effects.onCreateTodo)}>
+    <form onSubmit={effects.onCreateTodo}>
       <p>
         <input
-          onChange={persistEventInputValue(effects.setNewTodoLabelChange)}
+          onChange={extractEventValue(effects.setNewTodoLabelChange)}
           placeholder='Type and press <Enter> to create an item'
           size='40'
           value={state.newTodoLabel}
         />
       </p>
     </form>
+    <select onChange={extractEventValue(effects.onDisplayChange)} value={state.display}>
+      <option value='all'>All</option>
+      <option value='active'>Active</option>
+      <option value='completed'>Completed</option>
+    </select>
     <ul>
-      {state.todos.valueSeq().map(({ id, label }) =>
+      {getVisibleTodos(state, state).map(({ completed, id, label }) =>
         <li key={id}>
           <label>
-            {label}
+            <input
+              checked={completed}
+              data-id={id}
+              onChange={extractEventTarget(effects.onTodoCompletionChange)}
+              type='checkbox'
+            />
+            {' '}
+            {completed
+              ? <del>{label}</del>
+              : label
+            }
           </label>
         </li>
       )}
