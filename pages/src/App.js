@@ -1,18 +1,20 @@
-import React, { Component } from 'react'
+import { default as React } from 'react'
 import { Map } from 'immutable'
 import { provideState, update, mergeIntoState, injectState } from "freactal";
 import logo from './logo.svg'
 import TodoList from './TodoList.js'
 import './App.css'
-import "isomorphic-fetch";
 
-const wrapComponentWithState = provideState({
+const withState = provideState({
   initialState: () => ({
     todos: new Map()
-  })
+  }),
+  effects: {
+    createTodo: (_, todo) => (state) => ({ ...state, todos: state.todos.set(todo.id, todo) })
+  }
 })
 
-const App = wrapComponentWithState(({ state }) => {
+export const App = ({ state, effects }) => {
 
   return (
     <div className="App">
@@ -24,6 +26,6 @@ const App = wrapComponentWithState(({ state }) => {
       <TodoList />
     </div>
   )
-})
+}
 
-export default App;
+export default withState(injectState(App))

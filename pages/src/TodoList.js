@@ -5,8 +5,13 @@ import { createSelector } from 'reselect'
 import { injectState, provideState, update, mergeIntoState } from "freactal";
 import { Map } from 'immutable'
 
+const persistEventInputValue = fn => (event, ...args) => fn(event.target.value, ...args)
+const persistEvent = fn => (event, ...args) => {
+  event.preventDefault()
+  return fn(event, ...args)
+}
 
-const wrapComponentWithState = provideState({
+const withState = provideState({
   initialState: () => ({
     newTodoLabel: ''
   }),
@@ -28,7 +33,7 @@ const wrapComponentWithState = provideState({
       },
       method: 'PUT'
     }),
-    onCreateTodo: (effects) => state => {
+    onCreateTodo: (effects, event) => state => {
       const id = Math.random().toString(36).slice(2)
       const todo = {
         id,
@@ -38,43 +43,42 @@ const wrapComponentWithState = provideState({
       effects.createTodo(todo)
       effects.freeInput()
     },
-    freeInput: update(state => ({ newTodoLabel: '' })),
-    createTodo: update((state, todo) => ({ todos: state.todos.set(todo.id, todo) })),
-    setNewTodoLabelChange: update((state, val) => ({ newTodoLabel: val })),
+    freeInput: () => state => ({
+      ...state,
+      newTodoLabel: ''
+    }),
+    setNewTodoLabelChange: (_, value) => state =>
+      ({
+        ...state,
+        newTodoLabel: value
+      })
   }
 })
 
-const TodoList = wrapComponentWithState(injectState(({ state, effects }) => {
+export const TodoList = ({ state, effects }) => (
 
-  const onNewTodoLabelChange = ev => effects.setNewTodoLabelChange(ev.target.value)
-  const onCreateTodo = ev => {
-    ev.preventDefault()
-    effects.onCreateTodo()
-  }
+  <div>
+    <form onSubmit={persistEvent(effects.onCreateTodo)}>
+      <p>
+        <input
+          onChange={persistEventInputValue(effects.setNewTodoLabelChange)}
+          placeholder='Type and press <Enter> to create an item'
+          size='40'
+          value={state.newTodoLabel}
+        />
+      </p>
+    </form>
+    <ul>
+      {state.todos.valueSeq().map(({ id, label }) =>
+        <li key={id}>
+          <label>
+            {label}
+          </label>
+        </li>
+      )}
+    </ul>
+  </div>
 
-  return (
-    <div>
-      <form onSubmit={onCreateTodo}>
-        <p>
-          <input
-            onChange={onNewTodoLabelChange}
-            placeholder='Type and press <Enter> to create an item'
-            size='40'
-            value={state.newTodoLabel}
-          />
-        </p>
-      </form>
-      <ul>
-        {state.todos.valueSeq().map(({ id, label }) =>
-          <li key={id}>
-            <label>
-              {label}
-            </label>
-          </li>
-        )}
-      </ul>
-    </div>
-  )
-}))
+)
 
-export default TodoList
+export default withState(injectState(TodoList));
