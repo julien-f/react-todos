@@ -1,17 +1,10 @@
 {
   "dependencies": {
-    "ejs": "^2.4.1",
-    "express": "^4.16.1",
     "immutable": "^3.8.2",
     "koa": "^2.3.0",
     "koa-body": "^2.5.0",
-    "koa-route": "^3.2.0",
     "koa-static": "^4.0.1",
-    "koa-websocket": "^4.0.0",
-    "path": "^0.12.7",
-    "react": "^0.14.7",
-    "react-dom": "^0.14.7",
-    "underscore": "^1.8.3"
+    "koa-websocket": "^4.0.0"
   },
   "scripts": {
     "start": "node index.js"

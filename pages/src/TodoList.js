@@ -24,7 +24,6 @@ export default class TodoList extends Component {
 
   _removeTodo = ({ target }) =>{
     const { id } = target.dataset
-    //this.props.todos.remove(id)
     this.props.onRemove(id)
   }
 

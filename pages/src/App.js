@@ -26,8 +26,9 @@ class App extends Component {
   }
 
   _onTodoRemove = id => {
+    const { todos } = this.state
     this.setState({
-      todos: this.state.todos.delete(id)
+      todos: todos.delete(id)
     })
     let data = {action : "delete", id:id}
     this.socket.send(JSON.stringify(data));
