@@ -1,11 +1,11 @@
 {
-  "private": true,
   "scripts": {
-    "build": "cd pages && yarn run build",
-    "start": "cd server && yarn run start"
+    "build": "(cd pages; yarn; yarn run build); (cd server; yarn)",
+    "start": "(cd server; yarn run start)"
   },
-  "workspaces": [
-    "pages",
-    "server"
-  ]
+  "dependencies": {
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6"
+  }
 }

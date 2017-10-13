@@ -1,9 +1,5 @@
 {
-  "name": "server",
-  "version": "0.1.0",
-  "private": true,
   "dependencies": {
-    "@koa/cors": "^2.2.1",
     "immutable": "^4.0.0-rc.3",
     "koa": "^2.3.0",
     "koa-body": "^2.5.0",

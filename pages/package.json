@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "freactal": "^1.1.1",
     "immutable": "^4.0.0-rc.3",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-immutable-proptypes": "^2.1.0",
     "react-scripts": "1.0.14",
+    "redux-promise-middleware": "^4.4.1",
+    "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1"
   },
   "scripts": {
