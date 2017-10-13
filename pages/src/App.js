@@ -1,31 +1,23 @@
-import React from 'react'
-import { Map } from 'immutable'
-import { provideState } from "freactal";
-import logo from './logo.svg'
+import React, { Component } from 'react'
+import { observer } from 'mobx-react'
 import TodoList from './TodoList'
+import logo from './logo.svg'
 import './App.css'
 
-const withState = provideState({
-  initialState: () => ({
-    todos: new Map()
-  }),
-  effects: {
-    updateTodo: (_, todo) => (state) => ({ ...state, todos: state.todos.set(todo.id, todo) })
+const App = observer(
+  class App extends Component {
+    render() {
+      return (
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">Welcome to React</h1>
+          </header>
+          <TodoList />
+        </div>
+      )
+    }
   }
-})
+)
 
-export const App = ({ state, effects }) => {
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">Welcome to React</h1>
-      </header>
-      <TodoList />
-      <TodoList />
-    </div>
-  )
-}
-
-export default withState(App)
+export default App
