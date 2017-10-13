@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
-import { observer } from 'mobx-react'
-import TodoList from './TodoList'
-import logo from './logo.svg'
-import './App.css'
+import React, { Component } from "react";
+import { observer } from "mobx-react";
+import TodoList from "./TodoList";
+import logo from "./logo.svg";
+import "./App.css";
 
 const App = observer(
   class App extends Component {
@@ -14,10 +14,11 @@ const App = observer(
             <h1 className="App-title">Welcome to React</h1>
           </header>
           <TodoList />
+          <TodoList />
         </div>
-      )
+      );
     }
   }
-)
+);
 
-export default App
+export default App;
