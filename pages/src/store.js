@@ -30,11 +30,13 @@ appState.updateTodoLabelChange = action(value => {
 
 appState.initialLoad = action(() =>
   fetch("/todos").then(res =>
-    res.json().then(toDos => {
-      toDos.forEach(function(todo) {
-        appState.todos.set(todo.id, todo);
-      }, this);
-    })
+    res.json().then(
+      action(toDos => {
+        toDos.forEach(function(todo) {
+          appState.todos.set(todo.id, todo);
+        }, this);
+      })
+    )
   )
 );
 
