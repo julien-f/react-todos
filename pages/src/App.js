@@ -10,11 +10,12 @@ const withState = provideState({
     todos: new Map()
   }),
   effects: {
-    updateTodo: (_, todo) => (state) => ({ ...state, todos: state.todos.set(todo.id, todo) })
+    updateTodo: (_, todo) => (state) =>
+      ({ ...state, todos: state.todos.set(todo.id, todo) })
   }
 })
 
-export const App = ({ state, effects }) => {
+const App = () => {
 
   return (
     <div className="App">

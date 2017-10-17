@@ -1,6 +1,6 @@
 import React from 'react'
 import { createSelector } from 'reselect'
-import { injectState, provideState, mergeIntoState } from "freactal";
+import { injectState, provideState } from "freactal";
 import { Map } from 'immutable'
 
 const extractEventValue = fn => (event, ...args) => fn(event.target.value, ...args)
@@ -16,6 +16,7 @@ const withState = provideState({
     newTodoLabel: ''
   }),
   effects: {
+    /*
     initialize: (effects) => fetch('//localhost:20431/todos')
       .then(res => res.json()
         .then(todos => mergeIntoState({
@@ -25,7 +26,7 @@ const withState = provideState({
             })
           })
         })
-        )),
+        )),*/
     sendToServer: (effects, todo) => fetch(`http://localhost:20431/todos/${todo.id}`, {
       body: JSON.stringify(todo),
       headers: {
@@ -62,36 +63,30 @@ const withState = provideState({
         display: value
       }),
     onTodoCompletionChange: (effects, target) => state => {
+
       const { id } = target.dataset
-      effects.updateTodo({
-        ...state.todos.get(id),
-        completed: target.checked
-      })
-      effects.sendToServer({
-        ...state.todos.get(id),
-        completed: target.checked
-      })
+
+      const todo = state.todos.get(id)
+      todo.completed = !target.checked
+
+      effects.updateTodo(todo)
+      effects.sendToServer(todo)
     }
+
+  },
+  computed: {
+    visibleTodos: ({ display, todos }) => (display === 'all') ? todos.valueSeq() : 
+      todos.valueSeq().filter(
+        display === 'active'
+          ? t => !t.completed
+          : t => t.completed)
   }
+
+
 })
 
-const getVisibleTodos = createSelector(
-  state => state.display,
-  state => state.todos,
-  (display, todos) => {
-    if (display === 'all') {
-      return todos.valueSeq()
-    }
 
-    return todos.valueSeq().filter(
-      display === 'active'
-        ? t => !t.completed
-        : t => t.completed
-    )
-  }
-)
-
-export const TodoList = ({ state, effects }) => (
+export const TodoList = ({ state, effects, computed }) => (
 
   <div>
     <form onSubmit={effects.onCreateTodo}>
@@ -110,7 +105,7 @@ export const TodoList = ({ state, effects }) => (
       <option value='completed'>Completed</option>
     </select>
     <ul>
-      {getVisibleTodos(state, state).map(({ completed, id, label }) =>
+      {state.visibleTodos.map(({ completed, id, label }) =>
         <li key={id}>
           <label>
             <input
@@ -126,10 +121,11 @@ export const TodoList = ({ state, effects }) => (
             }
           </label>
         </li>
-      )}
+      )
+      }
     </ul>
   </div>
 
 )
 
-export default withState(injectState(TodoList));
+export default withState(injectState(TodoList))
