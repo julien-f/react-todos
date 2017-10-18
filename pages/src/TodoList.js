@@ -62,34 +62,36 @@ const withState = provideState({
         ...state,
         display: value
       }),
-    onTodoCompletionChange: (effects, target) => state => {
+    onTodoCompletionChange: (effects, target) => state =>  {
 
       const { id } = target.dataset
+      const targetState = !target.checked
 
-      const todo = state.todos.get(id)
-      todo.completed = !target.checked
-
-      effects.updateTodo(todo)
-      effects.sendToServer(todo)
+      effects.changeTodo(id, targetState)
+      /*
+      effects.updateTodo({
+        ...state.todos.get(id),
+        completed: target.checked
+      })
+      */
+      //effects.sendToServer(todo)
     }
 
   },
   computed: {
-    visibleTodos: ({ display, todos }) => (display === 'all') ? todos.valueSeq() : 
+    visibleTodos: ({ display, todos }) => (display === 'all') ? todos.valueSeq() :
       todos.valueSeq().filter(
         display === 'active'
           ? t => !t.completed
           : t => t.completed)
   }
-
-
 })
 
 
 export const TodoList = ({ state, effects, computed }) => (
 
   <div>
-    <form onSubmit={effects.onCreateTodo}>
+    <form onSubmit={eventPreventDefault(effects.onCreateTodo)}>
       <p>
         <input
           onChange={extractEventValue(effects.setNewTodoLabelChange)}

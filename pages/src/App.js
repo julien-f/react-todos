@@ -11,11 +11,13 @@ const withState = provideState({
   }),
   effects: {
     updateTodo: (_, todo) => (state) =>
-      ({ ...state, todos: state.todos.set(todo.id, todo) })
+      ({ ...state, todos: state.todos.set(todo.id, todo) }),
+    changeTodo: (_, id, targetState) => state =>
+      ({ ...state, todos: state.todos.set(id, { ...state.todos.get(id), completed: targetState }) })
   }
 })
 
-const App = () => {
+const App = ({ state, effects }) => {
 
   return (
     <div className="App">
