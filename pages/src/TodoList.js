@@ -68,13 +68,8 @@ const withState = provideState({
       const targetState = !target.checked
 
       effects.changeTodo(id, targetState)
-      /*
-      effects.updateTodo({
-        ...state.todos.get(id),
-        completed: target.checked
-      })
-      */
-      //effects.sendToServer(todo)
+  
+      effects.sendToServer(todo)
     }
 
   },
