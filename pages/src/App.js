@@ -11,17 +11,22 @@ class App extends Component {
   }
 
   componentWillMount() {
-    fetch('//localhost:20431/todos').then(res =>
-      res.json().then(todos => {
-        this.setState({
-          todos: new Map().withMutations(map => {
-            todos.forEach(todo => {
-              map.set(todo.id, todo)
-            })
-          })
-        })
+    this._loadTodos()
+  }
+
+  async _loadTodos() {
+    const response = await fetch('//localhost:20431/todos')
+    const content = await response.text()
+    this.setState({
+      todos: new Map().withMutations(todos => {
+        for (const line of content.split('\n')) {
+          if (line !== '') {
+            const todo = JSON.parse(line)
+            todos.set(todo.id, todo)
+          }
+        }
       })
-    )
+    })
   }
 
   _onCreateTodo = todo => {

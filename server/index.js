@@ -1,3 +1,5 @@
+const { PassThrough } = require('stream')
+
 const app = new (require('koa'))()
 
 app.use(require('@koa/cors')())
@@ -16,7 +18,15 @@ app.use(async (ctx, next) => {
   const { method } = ctx
   if (method === 'GET') {
     if (id === undefined) {
-      ctx.body = todos.toArray()
+      const out = new PassThrough()
+      ctx.set('content-type', 'application/x-ndjson')
+      ctx.body = out
+
+      todos.forEach(todo => {
+        out.write(JSON.stringify(todo))
+        out.write('\n')
+      })
+      out.end()
     } else {
       ctx.body = todos.get(id)
     }
